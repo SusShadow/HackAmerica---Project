@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="emoti-ai-style.css">
+    <title>Emoti</title>
+</head>
+<body>
+    <a href="main.html"><div class="banner"><h1><center>Emoti AI</center></h1></div></a>
+
+    <div class="banner1">
+        <div id="chatbox">
+            <div id="messages"></div>
+            <input id="userInput" type="text" placeholder="Ask Emoti something...">
+            <button onclick="askGemini()">Send</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script>
+        const GEMINI_API_KEY = "AIzaSyC37bKRYUx2Cg2MCG3qPmFjKBUTDpyDaR8";
+        const conversationHistory = [];
+
+        window.addEventListener("DOMContentLoaded", () => {
+            const messagesDiv = document.getElementById("messages");
+            messagesDiv.innerHTML += `<div class="msg-ai"><b>Emoti:</b> Hey! I'm here to be your companion. Talk to me about anything that's on your mind.</div>`;
+        });
+
+        async function askGemini() {
+            const messagesDiv = document.getElementById("messages");
+            const input = document.getElementById("userInput");
+            const userMessage = input.value.trim();
+            if (!userMessage) return;
+
+            // Safely append user message
+            const userDiv = document.createElement("div");
+            userDiv.className = "msg-user";
+            userDiv.innerHTML = `<b>You:</b> `;
+            userDiv.appendChild(document.createTextNode(userMessage));
+            messagesDiv.appendChild(userDiv);
+            input.value = "";
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+            // Add to conversation history
+            conversationHistory.push({
+                role: "user",
+                parts: [{ text: userMessage }]
+            });
+
+            // Show typing indicator
+            const typingDiv = document.createElement("div");
+            typingDiv.className = "msg-ai";
+            typingDiv.id = "typing-indicator";
+            typingDiv.innerHTML = `<b>Emoti:</b> <i>typing...</i>`;
+            messagesDiv.appendChild(typingDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+            try {
+                const res = await fetch(
+                    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`,
+                    {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            system_instruction: {
+                                parts: [{
+                                    text: `You are Emoti, a warm, friendly, and supportive AI companion. 
+                                    You listen carefully and respond with empathy and encouragement. 
+                                    Keep responses concise and conversational. 
+                                    Never give medical diagnoses or replace professional help, 
+                                    but always be kind and supportive.`
+                                }]
+                            },
+                            contents: conversationHistory,
+                            generationConfig: {
+                                temperature: 0.9,
+                                maxOutputTokens: 500
+                            },
+                            safetySettings: [
+                                { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_ONLY_HIGH" },
+                                { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_ONLY_HIGH" },
+                                { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_ONLY_HIGH" },
+                                { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_ONLY_HIGH" }
+                            ]
+                        })
+                    }
+                );
+
+                const data = await res.json();
+                console.log(JSON.stringify(data, null, 2)); // debug - remove later
+
+                // Remove typing indicator
+                document.getElementById("typing-indicator")?.remove();
+
+                if (data.error) {
+                    throw new Error(`API Error ${data.error.code}: ${data.error.message}`);
+                }
+
+                const aiRaw = data.candidates?.[0]?.content?.parts?.[0]?.text;
+
+                if (!aiRaw) {
+                    const blockReason = data.promptFeedback?.blockReason;
+                    const finishReason = data.candidates?.[0]?.finishReason;
+                    throw new Error(`No response. Block reason: ${blockReason || "none"}, Finish reason: ${finishReason || "unknown"}`);
+                }
+
+                // Add AI response to history
+                conversationHistory.push({
+                    role: "model",
+                    parts: [{ text: aiRaw }]
+                });
+
+                const aiDiv = document.createElement("div");
+                aiDiv.className = "msg-ai";
+                aiDiv.innerHTML = `<b>Emoti:</b> ${marked.parse(aiRaw)}`;
+                messagesDiv.appendChild(aiDiv);
+                messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+            } catch (err) {
+                console.error(err);
+                document.getElementById("typing-indicator")?.remove();
+                const errDiv = document.createElement("div");
+                errDiv.className = "msg-ai";
+                errDiv.innerHTML = `<b>Emoti:</b> Sorry, something went wrong — ${err.message}`;
+                messagesDiv.appendChild(errDiv);
+                messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            }
+        }
+
+        document.getElementById("userInput").addEventListener("keydown", (e) => {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                askGemini();
+            }
+        });
+
+        function toggleMenu() {
+            document.getElementById("sideMenu").classList.toggle("active");
+        }
+    </script>
+</body>
+</html>
