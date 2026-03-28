@@ -1,0 +1,94 @@
+/* 1. Global Reset & Background */
+html, body {
+    height: 100%;
+    margin: 0;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background-image: url('background-home.png');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed; /* Keeps bg steady while scrolling */
+    display: flex;
+    flex-direction: column;
+}
+
+/* 2. Modern Banner */
+.banner1 {
+    /* 1. The "Hug" Logic */
+    display: inline-block;    /* Shrinks the width to fit the content */
+    margin: 40px auto;        /* Centers the banner horizontally */
+    
+    /* 2. Styling */
+    color: rgb(255, 255, 255);
+    text-align: center; 
+    padding: 20px 40px;       /* Adjusted padding for a better shape */
+    background: rgba(255, 255, 255, 0.041); 
+    backdrop-filter: blur(10px); /* Adds that frosted glass look */
+    
+    /* 3. Shape & Border */
+    border-radius: 50px;      /* Gives it a rounded, pill-like look */
+    border: 1px solid rgba(255, 255, 255, 0.2);
+
+    /* 4. Typography */
+    font-size: clamp(1.5rem, 5vw, 2.5rem); 
+    font-weight: 800;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+}
+
+/* Parent container fix to ensure the inline-block banner stays centered */
+header {
+    text-align: center;
+    width: 100%;
+}
+
+/* 3. Layout Container */
+.table-container {
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+    flex-wrap: wrap;
+    gap: 25px;
+    padding: 40px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* 4. Glassmorphism Card Style */
+.table-box {
+    /* The "Frosted" Effect */
+    background: rgba(255, 255, 255, 0.15); 
+    backdrop-filter: blur(12px); 
+    -webkit-backdrop-filter: blur(12px);
+    
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 24px;
+    padding: 30px;
+    text-align: center;
+    
+    flex: 1;
+    min-width: 200px; /* Better for mobile */
+    max-width: 280px;
+    
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+}
+
+/* 5. Interaction (Hover) */
+.table-box:hover {
+    transform: translateY(-10px);
+    background: rgba(255, 255, 255, 0.25);
+    box-shadow: 0 15px 45px rgba(0, 0, 0, 0.3);
+}
+
+/* 6. Clean Typography for Links */
+a {
+    color: #1a1a1a;
+    text-decoration: none;
+    font-weight: 1000;
+    display: block; /* Makes the whole box clickable if wrapped in <a> */
+    height: 100%;
+}
+
+a:hover {
+    color: #000;
+}

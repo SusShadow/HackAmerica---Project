@@ -1,0 +1,56 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background-image: url('background-home.png');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed; /* Keeps bg steady while scrolling */
+    display: flex;
+    flex-direction: column;
+}
+
+.banner {
+    background: black;
+    color: black;
+    text-align: center;
+    color: white;
+    padding: 1px;
+    font-size: 24px;
+    font-weight: bold;
+    margin: 0px;
+}
+
+/* 2. Modern Banner */
+.banner1 {
+    /* 1. The "Hug" Logic */
+    display: inline-block;    /* Shrinks the width to fit the content */
+    margin: 40px auto;        /* Centers the banner horizontally */
+    
+    /* 2. Styling */
+    color: rgb(255, 255, 255);
+    text-align: center; 
+    padding: 20px 40px;       /* Adjusted padding for a better shape */
+    background: rgba(255, 255, 255, 0.041); 
+    backdrop-filter: blur(10px); /* Adds that frosted glass look */
+    
+    /* 3. Shape & Border */
+    border-radius: 50px;      /* Gives it a rounded, pill-like look */
+    border: 1px solid rgba(255, 255, 255, 0.2);
+
+    /* 4. Typography */
+    font-size: clamp(1.5rem, 5vw, 2.5rem); 
+    font-weight: 800;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+}
+a:link {
+    color: black;
+    text-decoration: none;
+}
+a:visited {
+    color: black;
+    text-decoration: none;
+}
+a:hover {
+    color: black; 
+}
