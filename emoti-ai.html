@@ -8,7 +8,7 @@
     <title>Emoti AI</title>
 </head>
 <body>
-
+ 
     <nav class="navbar">
         <a href="main.html" class="nav-logo">EMOTI</a>
         <div class="nav-links">
@@ -18,9 +18,9 @@
             <a href="emoti-ai.html" class="nav-cta">Talk with Emoti AI</a>
         </div>
     </nav>
-
+ 
     <div class="ai-layout">
-
+ 
         <!-- LEFT SIDEBAR -->
         <div class="sidebar">
             <div class="sidebar-section">
@@ -41,7 +41,7 @@
                 <div class="suggestion" onclick="sendSuggestion('How do I help a friend who is struggling?')">How do I help a friend who is struggling?</div>
             </div>
         </div>
-
+ 
         <!-- MAIN CHAT -->
         <div class="chat-wrapper">
             <div class="chat-header">
@@ -60,7 +60,7 @@
                 <button onclick="askGemini()">Send</button>
             </div>
         </div>
-
+ 
         <!-- RIGHT SIDEBAR: HISTORY -->
         <div class="sidebar sidebar-right">
             <div class="sidebar-section">
@@ -68,19 +68,18 @@
                 <div id="history-list"><div class="history-empty">No messages yet</div></div>
             </div>
         </div>
-
+ 
     </div>
-
+ 
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script>
-        const GEMINI_API_KEY = "AIzaSyDtqPqWE98tqqRj5m8V1jpRQiC6AOGLiy8";
         const conversationHistory = [];
         const historyLog = [];
-
+ 
         window.addEventListener("DOMContentLoaded", () => {
             appendAI("Hey! I'm Emoti — your personal companion. I'm here to listen, support, and help you through whatever's on your mind. What's going on?");
         });
-
+ 
         function appendAI(text) {
             const messagesDiv = document.getElementById("messages");
             const div = document.createElement("div");
@@ -89,7 +88,7 @@
             messagesDiv.appendChild(div);
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
         }
-
+ 
         function appendUser(text) {
             const messagesDiv = document.getElementById("messages");
             const div = document.createElement("div");
@@ -99,11 +98,11 @@
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
             addToHistory(text);
         }
-
+ 
         function escapeHtml(text) {
             return text.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
         }
-
+ 
         function addToHistory(text) {
             historyLog.push(text);
             const historyList = document.getElementById("history-list");
@@ -113,7 +112,7 @@
             item.textContent = text.length > 40 ? text.substring(0, 40) + "…" : text;
             historyList.appendChild(item);
         }
-
+ 
         function clearChat() {
             document.getElementById("messages").innerHTML = "";
             document.getElementById("history-list").innerHTML = '<div class="history-empty">No messages yet</div>';
@@ -121,52 +120,49 @@
             historyLog.length = 0;
             appendAI("Chat cleared! I'm still here whenever you're ready to talk.");
         }
-
+ 
         function sendSuggestion(text) {
             document.getElementById("userInput").value = text;
             askGemini();
         }
-
+ 
         async function askGemini() {
             const messagesDiv = document.getElementById("messages");
             const input = document.getElementById("userInput");
             const userMessage = input.value.trim();
             if (!userMessage) return;
-
+ 
             appendUser(userMessage);
             input.value = "";
-
+ 
             conversationHistory.push({ role: "user", parts: [{ text: userMessage }] });
-
+ 
             const typingDiv = document.createElement("div");
             typingDiv.className = "msg-ai";
             typingDiv.id = "typing-indicator";
             typingDiv.innerHTML = `<div class="msg-bubble ai-bubble typing-dots"><span></span><span></span><span></span></div>`;
             messagesDiv.appendChild(typingDiv);
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
-
+ 
             try {
-                const res = await fetch(
-                    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`,
-                    {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                            system_instruction: {
-                                parts: [{ text: `You are Emoti, a warm, friendly, and supportive AI companion. You listen carefully and respond with empathy and encouragement. Keep responses concise and conversational. Never give medical diagnoses or replace professional help, but always be kind and supportive.` }]
-                            },
-                            contents: conversationHistory,
-                            generationConfig: { temperature: 0.9, maxOutputTokens: 500 },
-                            safetySettings: [
-                                { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_ONLY_HIGH" },
-                                { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_ONLY_HIGH" },
-                                { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_ONLY_HIGH" },
-                                { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_ONLY_HIGH" }
-                            ]
-                        })
-                    }
-                );
-
+                const res = await fetch("/api/chat", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        system_instruction: {
+                            parts: [{ text: `You are Emoti, a warm, friendly, and supportive AI companion. You listen carefully and respond with empathy and encouragement. Keep responses concise and conversational. Never give medical diagnoses or replace professional help, but always be kind and supportive.` }]
+                        },
+                        contents: conversationHistory,
+                        generationConfig: { temperature: 0.9, maxOutputTokens: 500 },
+                        safetySettings: [
+                            { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_ONLY_HIGH" },
+                            { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_ONLY_HIGH" },
+                            { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_ONLY_HIGH" },
+                            { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_ONLY_HIGH" }
+                        ]
+                    })
+                });
+ 
                 const data = await res.json();
                 document.getElementById("typing-indicator")?.remove();
                 if (data.error) throw new Error(`API Error ${data.error.code}: ${data.error.message}`);
@@ -174,13 +170,13 @@
                 if (!aiRaw) throw new Error("No response received.");
                 conversationHistory.push({ role: "model", parts: [{ text: aiRaw }] });
                 appendAI(aiRaw);
-
+ 
             } catch (err) {
                 document.getElementById("typing-indicator")?.remove();
                 appendAI(`Sorry, something went wrong — ${err.message}`);
             }
         }
-
+ 
         document.getElementById("userInput").addEventListener("keydown", (e) => {
             if (e.key === "Enter") { e.preventDefault(); askGemini(); }
         });
