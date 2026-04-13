@@ -71,6 +71,56 @@
             </a>
         </div>
     </section>
+<!-- Quote Carousel -->
+<div class="quote-carousel">
+  <div class="qc-card" id="qcCard">
+    <div class="qc-mark">"</div>
+    <p class="qc-text" id="qcText"></p>
+    <p class="qc-author" id="qcAuthor"></p>
+  </div>
+  <div class="qc-nav">
+    <button class="qc-btn" id="qcPrev">&#8592;</button>
+    <div class="qc-dots" id="qcDots"></div>
+    <button class="qc-btn" id="qcNext">&#8594;</button>
+  </div>
+</div>
 
+<script>
+const quotes = [
+  { text: "I found that with depression, one of the most important things you can realize is that you’re not alone. You’re not the first to go through it, you’re not gonna be the last to go through it,", author: "Dwayne The Rock Johnson"},
+  { text: "Happiness can be found even in the darkest of times, if one only remembers to turn on the light.", author: "Albus Dumbledore from Harry Potter and the Prisoner of Azkaban" },
+  { text: "Have patience with all things, but chiefly have patience with yourself. Do not lose courage in considering your own imperfections but instantly set about remedying them—every day begin the task anew.", author: "Saint Francis de Sales" },
+  { text: "If you want to conquer the anxiety of life, live in the moment, live in the breath.", author: "Amit Ray" },
+  { text: "So many people look at [my depression] as me being ungrateful, but that is not it — I can’t help it. There’s not much that I’m closed off about, and the universe gave me all that so I could help people feel like they don’t have to be something they’re not or feel like they have to fake happy. There’s nothing worse than being fake happy.", author: "Miley Cyrus" },
+  { text: "If there is no struggle, there is no progress.", author: "Fredrick Douglas" },
+  { text: "There is no cast, no scar, no stitches. No X-ray with the evidence of pain. Rarely is there physical evidence of mental illness, but for those suffering from pervasive mental illness the pain and exhaustion is deep and heavy.", author: "Emily Sanders, LMFT" },
+];
+let current = 0, timer;
+const card = document.getElementById('qcCard');
+const textEl = document.getElementById('qcText');
+const authorEl = document.getElementById('qcAuthor');
+const dotsEl = document.getElementById('qcDots');
+quotes.forEach((_, i) => {
+  const d = document.createElement('button');
+  d.className = 'qc-dot' + (i === 0 ? ' active' : '');
+  d.onclick = () => goTo(i);
+  dotsEl.appendChild(d);
+});
+function goTo(index) {
+  card.classList.add('hidden');
+  setTimeout(() => {
+    current = (index + quotes.length) % quotes.length;
+    textEl.textContent = quotes[current].text;
+    authorEl.textContent = '— ' + quotes[current].author;
+    document.querySelectorAll('.qc-dot').forEach((d, i) => d.classList.toggle('active', i === current));
+    card.classList.remove('hidden');
+  }, 400);
+  clearInterval(timer);
+  timer = setInterval(() => goTo(current + 1), 6000);
+}
+document.getElementById('qcPrev').onclick = () => goTo(current - 1);
+document.getElementById('qcNext').onclick = () => goTo(current + 1);
+goTo(0);
+</script>
 </body>
 </html>
